@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FralBT App</title>
+  <style>
+    body{margin:0;font-family:sans-serif;background:#000;color:#fff;height:100vh;display:flex;flex-direction:column}
+
+    /* Halaman umum */
+    .page{display:none;height:100vh;flex-direction:column}
+    .page.active{display:flex}
+
+    /* Header umum */
+    header{display:flex;align-items:center;padding:12px;background:#000;border-bottom:1px solid #333}
+    header h1{margin:0 0 0 10px;font-size:16px;font-weight:600;color:#fff}
+
+    /* Tombol hamburger */
+    .hamb{width:28px;height:20px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
+    .hamb span{height:3px;background:#fff;border-radius:2px}
+
+    /* Tombol back */
+    .back-btn{background:transparent;border:0;color:#bbb;font-size:20px;cursor:pointer;margin-right:10px}
+
+    /* Chat page */
+    .messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;margin-bottom:60px}
+    .msg{max-width:75%;padding:10px 14px;border-radius:14px;line-height:1.4}
+    .user{align-self:flex-end;background:#2b3948;border-bottom-right-radius:6px}
+    .ai{align-self:flex-start;background:#1e1f23;border-bottom-left-radius:6px}
+    .controls{position:fixed;bottom:0;left:0;right:0;display:flex;gap:8px;align-items:center;padding:10px;background:#000;border-top:1px solid #333}
+    .input{flex:1;background:#222;border-radius:20px;padding:10px 14px;border:none;color:#fff;outline:none}
+    .send{width:40px;height:40px;border-radius:50%;border:none;background:#444;color:#fff;font-size:16px;cursor:pointer}
+    .send:hover{background:#1f6feb}
+
+    /* Sambutan page */
+    .content-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;box-sizing:border-box}
+    .content{max-width:760px;text-align:center;font-size:clamp(16px,2.2vw,20px);line-height:1.7;color:#cfcfcf}
+  </style>
+</head>
+<body>
+
+  <!-- Halaman Chat -->
+  <div id="chatPage" class="page active">
+    <header>
+      <div class="hamb" onclick="showPage('sambutanPage')">
+        <span></span><span></span><span></span>
+      </div>
+      <h1>FralBT</h1>
+    </header>
+    <div id="messages" class="messages"></div>
+    <div class="controls">
+      <input id="input" class="input" placeholder="Ketik Pesan" />
+      <button id="sendBtn" class="send">➤</button>
+    </div>
+  </div>
+
+  <!-- Halaman Sambutan -->
+  <div id="sambutanPage" class="page">
+    <header>
+      <button class="back-btn" onclick="showPage('chatPage')">←</button>
+      <h1>Sambutan</h1>
+    </header>
+    <main class="content-wrap">
+      <div class="content">
+        <p>
+          Alhamdulillah, saya Fathur Rizam bersyukur kepada Allah karena telah diberi kesempatan untuk menciptakan aplikasi ini.  
+          Terima kasih juga saya sampaikan kepada Ketua Aplikasi Termux atas dukungan dan inspirasinya.  
+          Semoga aplikasi ini bisa bermanfaat bagi banyak orang.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // fungsi pindah halaman
+    function showPage(id){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // chat AI sederhana
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(text, who){
+      const div = document.createElement("div");
+      div.className = "msg " + who;
+      div.textContent = text;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function getAnswer(userText){
+      const q = userText.toLowerCase();
+      if(q.includes("siapa namamu")) return "Saya FralBT, asisten virtual Anda.";
+      if(q.includes("apa kabar")) return "Saya baik, terima kasih 😊. Bagaimana denganmu?";
+      if(q.includes("apa itu html")) return "HTML adalah bahasa markup untuk membuat struktur halaman web.";
+      if(q.includes("terima kasih")) return "Sama-sama! Senang bisa membantu.";
+      if(q.includes("halo") || q.includes("hai")) return "Halo juga 👋, ada yang bisa saya bantu?";
+      return "Maaf, saya belum mengerti pertanyaan itu. Coba tanyakan hal lain.";
+    }
+
+    function sendMessage(){
+      const text = inputEl.value.trim();
+      if(!text) return;
+      inputEl.value = "";
+      addMessage(text,"user");
+      setTimeout(()=>{
+        addMessage(getAnswer(text),"ai");
+      },600);
+    }
+
+    sendBtn.addEventListener("click",sendMessage);
+    inputEl.addEventListener("keydown",e=>{
+      if(e.key==="Enter" && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // pesan pembuka
+    addMessage("Halo! Saya FralBT. Silakan bertanya apa saja.","ai");
+  </script>
+</body>
+</html>
